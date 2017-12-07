@@ -21,7 +21,7 @@ class DCCollector(object):
                 dc_status = oapi.read_namespaced_deployment_config_status(dc.metadata.name, namespace)
 
                 dc_metrics = {
-                    'deployment_created': 0 if dc.metadata.creation_timestamp == 0 else 1,
+                    'deployment_created': time.mktime(dc.metadata.creation_timestamp.timetuple()),
                     'deployment_metadata_generation': dc.metadata.generation,
                     'deployment_spec_paused': 1 if dc.spec.paused else 0,
                     'deployment_spec_replicas': dc.spec.replicas,
