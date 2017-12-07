@@ -32,13 +32,13 @@ class DCCollector(object):
                     'deployment_status_replicas_updated': dc_status.status.updated_replicas,
                 }
 
-                metric_labels = ['namespace', 'deployment']
+                default_metric_labels = ['namespace', 'deployment']
 
                 for metric_name, metric_value in dc_metrics.items():
                     metric_family = GaugeMetricFamily(
                         EXPORTER_NAMESPACE + metric_name,
                         '',
-                        labels=metric_labels
+                        labels=default_metric_labels
                     )
                     metric_family.add_metric([namespace, dc.metadata.name], metric_value)
                     yield metric_family
@@ -48,7 +48,7 @@ class DCCollector(object):
                 metric_family = GaugeMetricFamily(
                     EXPORTER_NAMESPACE + 'deployment_labels',
                     'Kubernetes labels converted to Prometheus format',
-                    labels=metric_labels + ['label_{}'.format(x) for x in dc_meta_labels.keys()]
+                    labels=default_metric_labels + ['label_{}'.format(x) for x in dc_meta_labels.keys()]
                 )
                 metric_family.add_metric(
                     [namespace, dc.metadata.name] + list(dc_meta_labels.values()), 1)
@@ -64,7 +64,7 @@ class DCCollector(object):
                     metric_family = GaugeMetricFamily(
                         EXPORTER_NAMESPACE + 'deployment_spec_strategy_rollingupdate_max_unavailable',
                         '',
-                        labels=metric_labels
+                        labels=default_metric_labels
                     )
                     metric_family.add_metric([namespace, dc.metadata.name], max_unavailable)
                     yield metric_family
