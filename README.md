@@ -6,8 +6,10 @@ Prometheus exporter for OpenShift DeploymentConfig object state compatible with 
 
 ## Install the template
 
+You can specify multiple projects to collect as a space separated list:
+
 ```
-oc process -f dc-exporter-openshift-tpl.yaml | oc -n hawkular-exporter apply -f -
+oc process -f dc-exporter-openshift-tpl.yaml -p COLLECT_PROJECTS="myproject" | oc -n myproject apply -f -
 ```
 
 ## Add view permission to the service account on the projects you want to collect data from
