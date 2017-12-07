@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 from openshift import client, config
 from prometheus_client import start_http_server
@@ -24,11 +24,6 @@ else:
 
 oapi = client.OapiApi()
 
-def get_max_unavailable(int_or_percent, total):
-    if int_or_percent.find('%') != -1:
-        return math.ceil(total * int(int_or_percent[:-1]) / 100)
-    else:
-        return int_or_percent
 
 class DCCollector(object):
     def collect(self):
@@ -72,10 +67,10 @@ class DCCollector(object):
 
 
                 if dc.spec.strategy.type == 'Rolling':
-                    max_unavailable = get_max_unavailable(
-                        dc.spec.strategy.rolling_params.max_unavailable,
-                        dc_status.status.replicas
-                    )
+                    max_unavailable = dc.spec.strategy.rolling_params.max_unavailable
+                    # if rolling_params.max_unavailable is specified as percent compute nr of pods
+                    if max_unavailable.find('%') != -1:
+                        max_unavailable = math.ceil(dc_status.status.replicas * int(max_unavailable[:-1]) / 100)
 
                     metric_family = GaugeMetricFamily(
                         EXPORTER_NAMESPACE + 'deployment_spec_strategy_rollingupdate_max_unavailable',
