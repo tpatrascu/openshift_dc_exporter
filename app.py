@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 
 from openshift import client, config
+
 from prometheus_client import start_http_server
 from prometheus_client.core import GaugeMetricFamily, CounterMetricFamily, REGISTRY
+
+from collections import OrderedDict
 import os
 import time
 import math
-import argparse
-from collections import OrderedDict
 
 EXPORTER_NAMESPACE = 'kube_'
 EXPORTER_PORT = 8080
@@ -56,7 +57,7 @@ class DCCollector(object):
 
                 if dc.spec.strategy.type == 'Rolling':
                     max_unavailable = dc.spec.strategy.rolling_params.max_unavailable
-                    # if rolling_params.max_unavailable is specified as percent compute nr of pods
+                    # if rolling_params.max_unavailable is specified as percent, compute nr of pods
                     if max_unavailable.find('%') != -1:
                         max_unavailable = math.ceil(dc_status.status.replicas * int(max_unavailable[:-1]) / 100)
 
