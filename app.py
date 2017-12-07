@@ -10,21 +10,7 @@ import argparse
 from collections import OrderedDict
 
 EXPORTER_NAMESPACE = 'kube_'
-EXPORTER_PORT = 8000
-
-# parser = argparse.ArgumentParser(description='Prometheus exporter for OpenShift DeploymentConfig state.')
-# parser.add_argument('-projects', metavar='project', type=str, required=True, nargs='+',
-#                      help='list of projects to collect')
-# args = parser.parse_args()
-
-if 'KUBERNETES_PORT' not in os.environ:
-    config.load_kube_config()
-else:
-    config.load_incluster_config()
-
-projects = os.environ['COLLECT_PROJECTS'].split()
-
-oapi = client.OapiApi()
+EXPORTER_PORT = 8080
 
 
 class DCCollector(object):
@@ -84,6 +70,15 @@ class DCCollector(object):
 
 
 if __name__ == "__main__":
+    if 'KUBERNETES_PORT' not in os.environ:
+        config.load_kube_config()
+    else:
+        config.load_incluster_config()
+
+    projects = os.environ['COLLECT_PROJECTS'].split()
+
+    oapi = client.OapiApi()
+
     start_http_server(EXPORTER_PORT)
     print('Listening on port {}'.format(EXPORTER_PORT))
     REGISTRY.register(DCCollector())

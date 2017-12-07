@@ -1,0 +1,154 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  labels:
+    app: prometheus
+data:
+  prometheus.yml: |+
+    # my global config
+    global:
+      scrape_interval:     15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+      evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+      # scrape_timeout is set to the global default (10s).
+    # Alertmanager configuration
+    alerting:
+      alertmanagers:
+      - static_configs:
+        - targets:
+          # - alertmanager:9093
+    # Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
+    rule_files:
+      # - "first_rules.yml"
+      # - "second_rules.yml"
+    # A scrape configuration containing exactly one endpoint to scrape:
+    # Here it's Prometheus itself.
+    scrape_configs:
+      # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+      - job_name: 'prometheus'
+        # metrics_path defaults to '/metrics'
+        # scheme defaults to 'http'.
+        static_configs:
+          - targets: ['localhost:9090']
+
+      - job_name: 'dc-exporter'
+        static_configs:
+          - targets: ['dc-exporter:8000']
+
+---
+apiVersion: v1
+kind: DeploymentConfig
+metadata:
+  labels:
+    app: prometheus
+  name: prometheus
+spec:
+  replicas: 1
+  selector:
+    app: prometheus
+    deploymentconfig: prometheus
+  strategy:
+    activeDeadlineSeconds: 21600
+    resources: {}
+    rollingParams:
+      intervalSeconds: 1
+      maxSurge: 25%
+      maxUnavailable: 25%
+      timeoutSeconds: 600
+      updatePeriodSeconds: 1
+    type: Rolling
+  template:
+    metadata:
+      annotations:
+        openshift.io/generated-by: OpenShiftWebConsole
+      creationTimestamp: null
+      labels:
+        app: prometheus
+        deploymentconfig: prometheus
+    spec:
+      containers:
+      - image: 
+        imagePullPolicy: Always
+        name: prometheus
+        ports:
+        - containerPort: 9090
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /prometheus
+          name: prometheus-1
+        - mountPath: /etc/prometheus/prometheus.yml
+          name: prometheus-config
+          subPath: prometheus.yml
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - emptyDir: {}
+        name: prometheus-1
+      - configMap:
+          defaultMode: 420
+          name: prometheus-config
+        name: prometheus-config
+  test: false
+  triggers:
+  - type: ConfigChange
+  - imageChangeParams:
+      automatic: true
+      containerNames:
+      - prometheus
+      from:
+        kind: ImageStreamTag
+        name: prometheus:latest
+        namespace: myproject
+    type: ImageChange
+
+
+---
+kind: ImageStream
+apiVersion: v1
+metadata:
+  name: prometheus
+  labels:
+    app: prometheus
+spec:
+  dockerImageRepository: "prom/prometheus"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-service
+  labels:
+    app: prometheus
+spec:
+  ports:
+    - name: 9090-tcp
+      port: 9090
+      protocol: TCP
+      targetPort: 9090
+  selector:
+    deploymentconfig: prometheus
+  sessionAffinity: None
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Route
+metadata:
+  name: prometheus-route
+  labels:
+    app: prometheus
+spec:
+  port:
+    targetPort: 9090-tcp
+  to:
+    kind: Service
+    name: prometheus-service
+    weight: 100
+  wildcardPolicy: None
