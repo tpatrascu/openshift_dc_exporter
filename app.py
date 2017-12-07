@@ -58,7 +58,8 @@ class DCCollector(object):
                     )
                     metric_family.add_metric([namespace, dc.metadata.name], metric_value)
                     yield metric_family
-                
+
+
                 dc_meta_labels = OrderedDict(dc.metadata.labels)
                 metric_family = GaugeMetricFamily(
                     EXPORTER_NAMESPACE + 'deployment_labels',
@@ -68,6 +69,7 @@ class DCCollector(object):
                 metric_family.add_metric(
                     [namespace, dc.metadata.name] + list(dc_meta_labels.values()), 1)
                 yield metric_family
+
 
                 if dc.spec.strategy.type == 'Rolling':
                     max_unavailable = get_max_unavailable(
