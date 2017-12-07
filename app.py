@@ -12,22 +12,24 @@ from collections import OrderedDict
 EXPORTER_NAMESPACE = 'kube_'
 EXPORTER_PORT = 8000
 
-parser = argparse.ArgumentParser(description='Prometheus exporter for OpenShift DeploymentConfig state.')
-parser.add_argument('-projects', metavar='project', type=str, required=True, nargs='+',
-                     help='list of projects to collect')
-args = parser.parse_args()
+# parser = argparse.ArgumentParser(description='Prometheus exporter for OpenShift DeploymentConfig state.')
+# parser.add_argument('-projects', metavar='project', type=str, required=True, nargs='+',
+#                      help='list of projects to collect')
+# args = parser.parse_args()
 
 if 'KUBERNETES_PORT' not in os.environ:
     config.load_kube_config()
 else:
     config.load_incluster_config()
 
+projects = os.environ['COLLECT_PROJECTS'].split()
+
 oapi = client.OapiApi()
 
 
 class DCCollector(object):
     def collect(self):
-        for namespace in args.projects:
+        for namespace in projects:
             for dc in oapi.list_namespaced_deployment_config(namespace).items:
                 dc_status = oapi.read_namespaced_deployment_config_status(dc.metadata.name, namespace)
 
