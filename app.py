@@ -36,22 +36,23 @@ class DCCollector(object):
             for metric_name, metric_value in dc_metrics.items():
                 metric_family = GaugeMetricFamily(
                     EXPORTER_NAMESPACE + metric_name,
-                    'no docs',
+                    '',
                     labels=default_metric_labels
                 )
                 metric_family.add_metric([dc.metadata.namespace, dc.metadata.name], metric_value)
                 yield metric_family
 
 
-            dc_meta_labels = OrderedDict(dc.metadata.labels)
-            metric_family = GaugeMetricFamily(
-                EXPORTER_NAMESPACE + 'deployment_labels',
-                'Kubernetes labels converted to Prometheus format',
-                labels=default_metric_labels + ['label_{}'.format(x.replace('-', '_')) for x in dc_meta_labels.keys()]
-            )
-            metric_family.add_metric(
-                [dc.metadata.namespace, dc.metadata.name] + list(dc_meta_labels.values()), 1)
-            yield metric_family
+# TODO: fix this
+#            dc_meta_labels = OrderedDict(dc.metadata.labels)
+#            metric_family = GaugeMetricFamily(
+#                EXPORTER_NAMESPACE + 'deployment_labels',
+#                'Kubernetes labels converted to Prometheus format',
+#                labels=default_metric_labels + ['label_{}'.format(x.replace('-', '_')) for x in dc_meta_labels.keys()]
+#            )
+#            metric_family.add_metric(
+#                [dc.metadata.namespace, dc.metadata.name] + list(dc_meta_labels.values()), 1)
+#            yield metric_family
 
 
             if dc.spec.strategy.type == 'Rolling':
@@ -62,7 +63,7 @@ class DCCollector(object):
 
                 metric_family = GaugeMetricFamily(
                     EXPORTER_NAMESPACE + 'deployment_spec_strategy_rollingupdate_max_unavailable',
-                    'no docs',
+                    '',
                     labels=default_metric_labels
                 )
                 metric_family.add_metric([dc.metadata.namespace, dc.metadata.name], max_unavailable)

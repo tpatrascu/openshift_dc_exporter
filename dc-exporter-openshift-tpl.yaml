@@ -8,6 +8,11 @@ parameters:
     description: The URL of the repository with your application source code 
     value: https://github.com/tpatrascu/openshift_dc_exporter
     required: true
+  - name: NAMESPACE
+    displayName: Namespace
+    description: Project to install it in
+    required: true
+
 objects:
 - apiVersion: v1
   kind: ImageStream
@@ -15,12 +20,14 @@ objects:
     labels:
       app: dc-exporter
     name: dc-exporter
+    namespace: ${NAMESPACE}
 - apiVersion: v1
   kind: BuildConfig
   metadata:
     labels:
       app: dc-exporter
     name: dc-exporter
+    namespace: ${NAMESPACE}
   spec:
     nodeSelector: null
     output:
@@ -58,21 +65,25 @@ objects:
     labels:
       app: dc-exporter
     name: dc-exporter
+    namespace: ${NAMESPACE}
 - apiVersion: v1
   kind: ClusterRoleBinding
   metadata:
     name: dc-exporter-cluster-reader
+    namespace: ${NAMESPACE}
   roleRef:
     name: cluster-reader
   subjects:
   - kind: ServiceAccount
     name: dc-exporter
+    namespace: ${NAMESPACE}
 - apiVersion: v1
   kind: DeploymentConfig
   metadata:
     labels:
       app: dc-exporter
     name: dc-exporter
+    namespace: ${NAMESPACE}
   spec:
     replicas: 1
     selector:
@@ -130,6 +141,7 @@ objects:
     labels:
       app: dc-exporter
     name: dc-exporter
+    namespace: ${NAMESPACE}
   spec:
     ports:
     - name: 8080-tcp
