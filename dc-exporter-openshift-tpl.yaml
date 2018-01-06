@@ -8,10 +8,6 @@ parameters:
     description: The URL of the repository with your application source code 
     value: https://github.com/tpatrascu/openshift_dc_exporter
     required: true
-  - name: COLLECT_PROJECTS 
-    displayName: Projects to collect DeploymentConfig state from
-    description: Projects to collect DeploymentConfig state from, space separated
-    required: true
 objects:
 - apiVersion: v1
   kind: ImageStream
@@ -63,6 +59,15 @@ objects:
       app: dc-exporter
     name: dc-exporter
 - apiVersion: v1
+  kind: ClusterRoleBinding
+  metadata:
+    name: prometheus-cluster-reader
+  roleRef:
+    name: cluster-reader
+  subjects:
+  - kind: ServiceAccount
+    name: dc-exporter
+- apiVersion: v1
   kind: DeploymentConfig
   metadata:
     labels:
@@ -97,9 +102,6 @@ objects:
           ports:
           - containerPort: 8080
             protocol: TCP
-          env:
-          - name: COLLECT_PROJECTS
-            value: ${COLLECT_PROJECTS}
           resources: {}
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
