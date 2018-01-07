@@ -36,6 +36,7 @@ class DCCollector(object):
             for metric_name, metric_value in dc_metrics.items():
                 metric_family = GaugeMetricFamily(
                     EXPORTER_NAMESPACE + metric_name,
+                    '',
                     labels=default_metric_labels
                 )
                 metric_family.add_metric([dc.metadata.namespace, dc.metadata.name], metric_value)
@@ -61,6 +62,7 @@ class DCCollector(object):
 
                 metric_family = GaugeMetricFamily(
                     EXPORTER_NAMESPACE + 'deployment_spec_strategy_rollingupdate_max_unavailable',
+                    '',
                     labels=default_metric_labels
                 )
                 metric_family.add_metric([dc.metadata.namespace, dc.metadata.name], max_unavailable)
