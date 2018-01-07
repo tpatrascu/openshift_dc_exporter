@@ -39,7 +39,7 @@ class DCCollector(object):
                     '',
                     labels=default_metric_labels
                 )
-                metric_family.add_metric([namespace, dc.metadata.name], metric_value)
+                metric_family.add_metric([dc.metadata.namespace, dc.metadata.name], metric_value)
                 yield metric_family
 
 
@@ -50,7 +50,7 @@ class DCCollector(object):
                 labels=default_metric_labels + ['label_{}'.format(x) for x in dc_meta_labels.keys()]
             )
             metric_family.add_metric(
-                [namespace, dc.metadata.name] + list(dc_meta_labels.values()), 1)
+                [dc.metadata.namespace, dc.metadata.name] + list(dc_meta_labels.values()), 1)
             yield metric_family
 
 
@@ -65,7 +65,7 @@ class DCCollector(object):
                     '',
                     labels=default_metric_labels
                 )
-                metric_family.add_metric([namespace, dc.metadata.name], max_unavailable)
+                metric_family.add_metric([dc.metadata.namespace, dc.metadata.name], max_unavailable)
                 yield metric_family
 
 
