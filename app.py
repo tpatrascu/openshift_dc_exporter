@@ -51,7 +51,7 @@ class DCCollector(object):
             )
             metric_family.add_metric(
                 [dc.metadata.namespace, dc.metadata.name] + list(dc_meta_labels.values()), 1)
-            yield metric_family
+            #yield metric_family
 
 
             if dc.spec.strategy.type == 'Rolling':
@@ -66,7 +66,7 @@ class DCCollector(object):
                     labels=default_metric_labels
                 )
                 metric_family.add_metric([dc.metadata.namespace, dc.metadata.name], max_unavailable)
-                yield metric_family
+                #yield metric_family
 
 
 if __name__ == "__main__":
