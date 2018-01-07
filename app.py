@@ -40,7 +40,7 @@ class DCCollector(object):
                     labels=default_metric_labels
                 )
                 metric_family.add_metric([dc.metadata.namespace, dc.metadata.name], metric_value)
-                yield metric_family
+                #yield metric_family
 
 
             dc_meta_labels = OrderedDict(dc.metadata.labels)
