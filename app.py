@@ -17,7 +17,7 @@ EXPORTER_PORT = 8080
 class DCCollector(object):
     def collect(self):
         for dc in oapi.list_deployment_config_for_all_namespaces().items:
-            dc_status = oapi.read_namespaced_deployment_config_status(dc.metadata.name, namespace)
+            dc_status = oapi.read_namespaced_deployment_config_status(dc.metadata.name, dc.metadata.namespace)
 
             dc_metrics = {
                 'deployment_created': time.mktime(dc.metadata.creation_timestamp.timetuple()),

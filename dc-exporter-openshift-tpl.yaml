@@ -61,7 +61,7 @@ objects:
 - apiVersion: v1
   kind: ClusterRoleBinding
   metadata:
-    name: prometheus-cluster-reader
+    name: dc-exporter-cluster-reader
   roleRef:
     name: cluster-reader
   subjects:
