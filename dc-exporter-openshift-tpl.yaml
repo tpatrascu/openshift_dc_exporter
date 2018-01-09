@@ -11,6 +11,7 @@ parameters:
   - name: NAMESPACE
     displayName: Namespace
     description: Project to install it in
+    value: prometheus
     required: true
 
 objects:

@@ -4,16 +4,8 @@ Prometheus exporter for OpenShift DeploymentConfig object state compatible with 
 
 # Install instructions
 
-## Install the template
-
-You can specify multiple projects to collect as a space separated list:
+Requires cluster-admin privilege to install.
 
 ```
-oc process -f dc-exporter-openshift-tpl.yaml -p COLLECT_PROJECTS="myproject" | oc -n myproject apply -f -
-```
-
-## Add view permission to the service account on the projects you want to collect data from
-
-```
-oc -n myproject policy add-role-to-user view system:serviceaccount:myproject:dc-exporter
+oc process -f dc-exporter-openshift-tpl.yaml -p NAMESPACE=myprometheus | oc apply -f -
 ```
